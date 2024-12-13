@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wave Rider Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #87cefa, #1e90ff);
+            overflow: hidden;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: #0073e6;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+
+        canvas {
+            display: block;
+            margin: 20px auto;
+            background: #cce7ff;
+            border: 2px solid #0073e6;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            margin-top: 10px;
+        }
+
+        /* Custom Alert Box */
+        .custom-alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #0073e6;
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            display: none;
+            z-index: 1000;
+        }
+
+        .custom-alert button {
+            background-color: #fff;
+            color: #0073e6;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+
+        .custom-alert button:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Overlay for custom alert */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="post.html">Surfing</a>
+        <a href="contact.html">Wave Rider</a>
+    </nav>
+
+    <h1>Wave Rider Game</h1>
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+
+    <!-- Custom Alert -->
+    <div class="overlay" id="overlay"></div>
+    <div class="custom-alert" id="customAlert">
+        <p id="alertMessage"></p>
+        <button onclick="restartGame()">Restart</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Load images
+        const surferImg = new Image();
+        surferImg.src = "assets/img/surfboard.png";
+
+        const waveImg = new Image();
+        waveImg.src = "assets/img/wave.png";
+
+        // Game variables
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+
+        let surfer = { x: canvasWidth / 2 - 20, y: canvasHeight - 70, width: 40, height: 40 };
+        let obstacles = [];
+        let score = 0;
+        let gameOver = false;
+
+        // Key controls
+        let keys = {};
+
+        // Background colors
+        const colors = ["#f28b82", "#fbbc04", "#34a853", "#4285f4", "#c471ed"];
+        let currentBackground = "#87cefa";
+
+        // Listen for key events
+        window.addEventListener("keydown", (e) => (keys[e.key] = true));
+        window.addEventListener("keyup", (e) => (keys[e.key] = false));
+
+        function drawSurfer() {
+            ctx.drawImage(surferImg, surfer.x, surfer.y, surfer.width, surfer.height);
+        }
+
+        function spawnObstacle() {
+            const obstacleWidth = 50;
+            const obstacleHeight = 50;
+            const x = Math.random() * (canvasWidth - obstacleWidth);
+            const y = -obstacleHeight;
+            obstacles.push({ x, y, width: obstacleWidth, height: obstacleHeight });
+        }
+
+        function drawObstacles() {
+            obstacles.forEach((obstacle) => {
+                ctx.drawImage(waveImg, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            });
+        }
+
+        function moveObstacles() {
+            obstacles.forEach((obstacle) => {
+                obstacle.y += 5;
+            });
+
+            // Remove off-screen obstacles
+            obstacles = obstacles.filter((obstacle) => obstacle.y < canvasHeight);
+        }
+
+        function checkCollision() {
+            obstacles.forEach((obstacle) => {
+                if (
+                    surfer.x < obstacle.x + obstacle.width &&
+                    surfer.x + surfer.width > obstacle.x &&
+                    surfer.y < obstacle.y + obstacle.height &&
+                    surfer.y + surfer.height > obstacle.y
+                ) {
+                    gameOver = true;
+                }
+            });
+        }
+
+        function changeBackgroundColor() {
+            currentBackground = colors[Math.floor(Math.random() * colors.length)];
+            document.body.style.backgroundColor = currentBackground;
+        }
+
+        function updateGame() {
+            if (gameOver) {
+                showCustomAlert(`Game Over! Your Score: ${score}`);
+                return;
+            }
+
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+            // Move surfer
+            if (keys["ArrowLeft"] && surfer.x > 0) {
+                surfer.x -= 5;
+            }
+            if (keys["ArrowRight"] && surfer.x + surfer.width < canvasWidth) {
+                surfer.x += 5;
+            }
+
+            drawSurfer();
+
+            // Manage obstacles
+            moveObstacles();
+            drawObstacles();
+
+            // Check collision
+            checkCollision();
+
+            // Increment score and spawn obstacles
+            score += 1;
+            if (score % 100 === 0) {
+                spawnObstacle();
+                changeBackgroundColor();
+            }
+
+            // Display score
+            ctx.fillStyle = "#000";
+            ctx.font = "16px Arial";
+            ctx.fillText(`Score: ${score}`, 10, 20);
+
+            requestAnimationFrame(updateGame);
+        }
+
+        function showCustomAlert(message) {
+            const overlay = document.getElementById("overlay");
+            const customAlert = document.getElementById("customAlert");
+            const alertMessage = document.getElementById("alertMessage");
+
+            alertMessage.textContent = message;
+            overlay.style.display = "block";
+            customAlert.style.display = "block";
+        }
+
+        function restartGame() {
+            location.reload();
+        }
+
+        // Start the game
+        setInterval(spawnObstacle, 1500);
+        updateGame();
+    </script>
+
+</body>
+</html>

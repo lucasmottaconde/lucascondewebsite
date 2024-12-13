@@ -1,0 +1,89 @@
+body {
+    background-image: url('assets/img/blue.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    color: #1a3d6d; /* Dark Blue */
+    font-family: 'Playfair Display', sans-serif; /* Clean and modern for body text */
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    text-align: center;
+    padding: 50px 0;
+    background-color: rgba(70, 130, 180, 0.8); /* Steel Blue */
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: 3.5rem;
+    color: #00bfff; /* Deep Sky Blue */
+    margin: 0;
+}
+
+header p {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.navbar {
+    background-color: rgba(70, 130, 180, 0.9); /* Steel Blue */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    padding: 10px 20px;
+}
+
+.navbar .navbar-brand {
+    color: #00bfff; /* Deep Sky Blue */
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.navbar .nav-item {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.navbar .nav-item .nav-link {
+    color: #ffffff;
+    font-size: 1.2rem;
+    padding: 10px 15px;
+    transition: background 0.3s, color 0.3s;
+    text-align: right;
+}
+
+.navbar .nav-item .nav-link:hover {
+    background-color: #00bfff; /* Deep Sky Blue */
+    color: #000;
+}
+
+.content {
+    padding: 30px;
+    background-color: rgba(70, 130, 180, 0.7); /* Steel Blue */
+    margin: 30px auto;
+    border-radius: 10px;
+    max-width: 90%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.content h2 {
+    color: #00bfff; /* Deep Sky Blue */
+    margin-bottom: 20px;
+    font-size: 2.5rem;
+}
+
+.content p {
+    line-height: 1.8;
+    font-size: 1.4rem;
+}
+
+.video-container iframe {
+    width: 100%;
+    height: 500px;
+    border: 4px solid #00bfff; /* Deep Sky Blue */
+    border-radius: 10px;
+}
+
+.tableau-container {
+    margin-top: 30px;
+    text-align: center;
+}
